@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import {Link} from "react-router-dom";
 
 export default function LoginPage() {
     return (
@@ -24,16 +25,22 @@ export default function LoginPage() {
                 <CardContent className="grid gap-4">
                     <div className="grid gap-2">
                         <Label htmlFor="email">Email</Label>
-                        <Input id="email" type="email" placeholder="m@example.com" required />
+                        <Input id="email" type="email" placeholder="m@example.com" required/>
                     </div>
                     <div className="grid gap-2">
                         <Label htmlFor="password">Password</Label>
-                        <Input id="password" type="password" required />
+                        <Input id="password" type="password" required/>
                     </div>
                 </CardContent>
                 <CardFooter>
                     <Button className="w-full">Sign in</Button>
                 </CardFooter>
+                <div className="mt-4 text-center text-sm pb-8">
+                    New to BookBuddy?{" "}
+                    <Link to={'/register'} className="underline">
+                        Register
+                    </Link>
+                </div>
             </Card>
         </section>
 
