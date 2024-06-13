@@ -14,10 +14,12 @@ import {useRef} from "react";
 import {useMutation} from "@tanstack/react-query";
 import {login} from "@/http/api.ts";
 import {Loader} from "lucide-react";
+import useTokenStore from "@/store.ts";
 
 
 export default function LoginPage() {
         const navigate = useNavigate();
+        const setToken = useTokenStore((state) => state.setToken)
 
 
         const emailRef = useRef<HTMLInputElement>(null);
@@ -27,7 +29,10 @@ export default function LoginPage() {
     // Mutations
     const mutation = useMutation({
         mutationFn: login,
-        onSuccess: () => {
+        onSuccess: (response) => {
+
+                console.log("Login successful", response)
+            setToken(response.data.accessToken);
 
             navigate('/dashboard/home')
 
