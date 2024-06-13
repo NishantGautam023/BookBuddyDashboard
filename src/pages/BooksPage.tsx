@@ -32,7 +32,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import { MoreHorizontal } from "lucide-react";
+import {CirclePlus, MoreHorizontal} from "lucide-react";
 import { Book } from "@/types.ts";
 
 export default function BooksPage() {
@@ -44,6 +44,7 @@ export default function BooksPage() {
 
     return (
         <>
+            <div className="flex items-center justify-between">
             <Breadcrumb>
                 <BreadcrumbList>
                     <BreadcrumbItem>
@@ -55,6 +56,10 @@ export default function BooksPage() {
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
+                <Button>
+                    <CirclePlus size={20} />
+                    <span className="ml-2">ADD BOOK</span></Button>
+            </div>
 
             <Card className="mt-4">
                 <CardHeader>
