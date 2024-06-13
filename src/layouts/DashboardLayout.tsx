@@ -1,4 +1,4 @@
-import {Link, Outlet} from "react-router-dom";
+import {Link, Navigate, Outlet} from "react-router-dom";
 import {Button} from "@/components/ui/button.tsx";
 import {
     DropdownMenu,
@@ -12,9 +12,21 @@ import {Badge} from "@/components/ui/badge.tsx";
 import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet.tsx";
 import {Bell, CircleUser, Home, LineChart, Menu, Package, Package2, Search, ShoppingCart, Users} from "lucide-react";
 import {Input} from "@/components/ui/input.tsx";
+import useTokenStore from "@/store.ts";
 
 
 export default function DashboardLayout() {
+
+
+    // Check whether the user has the Tokens or not.
+    const token = useTokenStore(state => state.token)
+
+    // "" means false in the accessToken, or !token means also empty string, replace means by pressing back button it wont go there. and its self Closing for Navigate
+    if(token === "") {
+        return <Navigate to={'/auth/login'} replace/>
+    }
+
+
     return(
         <>
             <div className="grid min-h-screen w-full md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr]">
