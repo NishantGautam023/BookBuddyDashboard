@@ -13,6 +13,7 @@ import {Link,  useNavigate} from "react-router-dom";
 import {useRef} from "react";
 import {useMutation} from "@tanstack/react-query";
 import {login} from "@/http/api.ts";
+import {Loader} from "lucide-react";
 
 
 export default function LoginPage() {
@@ -59,7 +60,8 @@ export default function LoginPage() {
                 <CardHeader>
                     <CardTitle className="text-2xl">Login</CardTitle>
                     <CardDescription>
-                        Enter your email below to login to your account.
+                        Enter your email below to login to your account.<br/>
+                        {mutation.isError && <span className="text-red-500 text-sm">{mutation.error.message}</span>}
                     </CardDescription>
                 </CardHeader>
                 <CardContent className="grid gap-4">
@@ -73,7 +75,15 @@ export default function LoginPage() {
                     </div>
                 </CardContent>
                 <CardFooter>
-                    <Button onClick={onHandleSubmitClick} className="w-full">Sign in</Button>
+                    {mutation.isPending ? (
+                        <Button className="w-full bg-amber-200" disabled>
+                            Loading ...  <Loader className="animate-spin" />
+                        </Button>
+                    ) : (
+                        <Button onClick={onHandleSubmitClick} className="w-full">Sign in</Button>
+                    )}
+
+
                 </CardFooter>
                 <div className="mt-4 text-center text-sm pb-8">
                     New to BookBuddy?{" "}
