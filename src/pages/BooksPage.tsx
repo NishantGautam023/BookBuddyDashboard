@@ -34,6 +34,7 @@ import { Badge } from "@/components/ui/badge.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import {CirclePlus, MoreHorizontal} from "lucide-react";
 import { Book } from "@/types.ts";
+import {Link} from "react-router-dom"
 
 export default function BooksPage() {
     const { data, isLoading, isError } = useQuery({
@@ -56,9 +57,12 @@ export default function BooksPage() {
                     </BreadcrumbItem>
                 </BreadcrumbList>
             </Breadcrumb>
-                <Button>
-                    <CirclePlus size={20} />
-                    <span className="ml-2">ADD BOOK</span></Button>
+                <Link to={'/dashboard/books/create'}>
+                    <Button>
+                        <CirclePlus size={20} />
+                        <span className="ml-2">ADD BOOK</span>
+                    </Button>
+                </Link>
             </div>
 
             <Card className="mt-4">

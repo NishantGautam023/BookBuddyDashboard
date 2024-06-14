@@ -18,16 +18,16 @@ import useTokenStore from "@/store.ts";
 export default function DashboardLayout() {
 
 
-    // Check whether the user has the Tokens or not.
+
     const {token,setToken} = useTokenStore(state => state)
 
-    // "" means false in the accessToken, or !token means also empty string, replace means by pressing back button it wont go there. and its self Closing for Navigate
+
     if(token === "") {
         return <Navigate to={'/auth/login'} replace/>
     }
 
     function handleLogoutButton() {
-        // Empty the token
+
         setToken("")
     }
 
