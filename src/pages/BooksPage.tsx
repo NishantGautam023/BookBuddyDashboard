@@ -37,6 +37,7 @@ import { Book } from "@/types.ts";
 import {Link} from "react-router-dom"
 
 export default function BooksPage() {
+
     const { data, isLoading, isError } = useQuery({
         queryKey: ["books"],
         queryFn: getBooks,

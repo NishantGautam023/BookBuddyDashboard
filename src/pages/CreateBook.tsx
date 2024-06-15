@@ -22,9 +22,10 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
-import {useMutation} from "@tanstack/react-query";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import {createBook} from "@/http/api.ts";
 import {LoaderCircle} from "lucide-react";
+import {Link, useNavigate} from "react-router-dom";
 
 
 
@@ -61,7 +62,7 @@ export default function CreateBook() {
 
 
 
-
+    const navigate = useNavigate()
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -75,12 +76,19 @@ export default function CreateBook() {
     const fileRef = form.register('file');
 
 
+    const queryClient = useQueryClient();
+// the current query client instance which we made, in the main.tsx it will provide the instance of it.
+
+
     // Mutations
     const mutation = useMutation({
         mutationFn: createBook,
         onSuccess: () => {
-
+            queryClient.invalidateQueries({
+                queryKey: ['books']
+            })
            console.log('Book Created successfully')
+            navigate('/dashboard/books');
 
         },
     })
@@ -127,10 +135,12 @@ export default function CreateBook() {
                                 </BreadcrumbList>
                             </Breadcrumb>
                             <div className="flex items-center gap-4">
+                                <Link to={'/dashboard/books'}>
+                                    <Button variant={"outline"}>
+                                        <span className="ml-2">Cancel</span>
+                                    </Button>
+                                </Link>
 
-                                <Button variant={"outline"}>
-                                    <span className="ml-2">Cancel</span>
-                                </Button>
                                 <Button type="submit" disabled={mutation.isPending}>
                                     {mutation.isPending && <LoaderCircle className="animate-spin" /> }
                                     <span className="ml-2">Submit</span>
@@ -165,22 +175,7 @@ export default function CreateBook() {
                                     />
 
 
-                                    <FormField
-                                        control={form.control}
-                                        name="name"
-                                        render={({field}) => (
-                                            <FormItem>
-                                                <FormLabel>Name</FormLabel>
-                                                <FormControl>
-                                                    <Input
-                                                        type="text"
-                                                        className="w-full"{...field}
-                                                    />
-                                                </FormControl>
-                                                <FormMessage/>
-                                            </FormItem>
-                                        )}
-                                    />
+
 
                                     <FormField
                                         control={form.control}
@@ -237,7 +232,7 @@ export default function CreateBook() {
 
                                     <FormField
                                         control={form.control}
-                                        name="bookPDF"
+                                        name="file"
                                         render={() => (
                                             <FormItem>
                                                 <FormLabel>BookPDF</FormLabel>
