@@ -88,7 +88,7 @@ export default function RegisterPage() {
                         <div className="grid gap-4">
                             <div className="grid gap-2">
                                 <Label htmlFor="name">Name</Label>
-                                <Input id="name" ref={nameRef} placeholder="Max" required />
+                                <Input id="name" ref={nameRef} placeholder="Max" required autoComplete="name" />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="email">Email</Label>
@@ -98,11 +98,12 @@ export default function RegisterPage() {
                                     placeholder="m@example.com"
                                     required
                                     ref={emailRef}
+                                    autoComplete="email"
                                 />
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="password">Password</Label>
-                                <Input id="password" type="password" ref={passwordRef} required />
+                                <Input id="password" type="password" ref={passwordRef} required autoComplete="password" />
                             </div>
                             {errorMessage && (
                                 <div className="text-red-500 text-sm">

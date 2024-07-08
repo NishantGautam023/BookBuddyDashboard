@@ -34,10 +34,7 @@ export default function LoginPage() {
     const { toast } = useToast()
     
 
-      const isValidEmail = (email: string) => {
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailRegex.test(email);
-    }
+    
  
   
 
@@ -65,7 +62,7 @@ export default function LoginPage() {
 
             if (error.response) {
                 if (error.response.status === 404) {
-                    errorMessage = "The requested email or password was not found.";
+                    errorMessage = "The requested email or password is not correct.";
                 } else if (error.response.status === 500) {
                     errorMessage = "Internal server error. Please try again later.";
                 }
