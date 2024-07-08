@@ -13,6 +13,7 @@ import {Sheet, SheetContent, SheetTrigger} from "@/components/ui/sheet.tsx";
 import {Bell, CircleUser, Home, LineChart, Menu, Package, Package2, Search, ShoppingCart, Users} from "lucide-react";
 import {Input} from "@/components/ui/input.tsx";
 import useTokenStore from "@/store.ts";
+import { useToast } from "@/components/ui/use-toast"
 
 
 export default function DashboardLayout() {
@@ -20,7 +21,8 @@ export default function DashboardLayout() {
 
 
     const {token,setToken} = useTokenStore(state => state)
-
+     const { toast } = useToast()
+    
 
     if(token === "") {
         return <Navigate to={'/auth/login'} replace/>
@@ -29,6 +31,12 @@ export default function DashboardLayout() {
     function handleLogoutButton() {
 
         setToken("")
+        toast({
+          
+            title: `Logged out Successful at ${new Date().toDateString()}`,
+            variant: "destructive",
+            duration: 1000
+        })
     }
 
     return(
@@ -190,6 +198,7 @@ export default function DashboardLayout() {
                     </main>
                 </div>
             </div>
+             
         </>
     )
 }

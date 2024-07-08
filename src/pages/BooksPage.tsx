@@ -32,32 +32,67 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge.tsx";
 import { Button } from "@/components/ui/button.tsx";
-import {CirclePlus, MoreHorizontal} from "lucide-react";
+import { CirclePlus, MoreHorizontal } from "lucide-react";
 import { Book } from "@/types.ts";
-import {Link} from "react-router-dom"
+import { Link } from "react-router-dom";
+import { useState } from "react";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function BooksPage() {
-
     const { data, isLoading, isError } = useQuery({
         queryKey: ["books"],
         queryFn: getBooks,
         staleTime: 10000,
     });
 
+    const [deleteOpen, setDeleteOpen] = useState(false);
+    const [bookToDelete, setBookToDelete] = useState<Book | null>(null);
+
+    const handleDeleteClick = (book: Book) => {
+        setBookToDelete(book);
+        setDeleteOpen(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (bookToDelete) {
+            // Perform the delete operation here
+            console.log("Deleting book:", bookToDelete);
+            // After deletion, close the dialog
+            setDeleteOpen(false);
+            setBookToDelete(null);
+        }
+    };
+
+        const handleCancelDelete = () => {
+        // Close the dialog and reset state
+        setDeleteOpen(false);
+        setBookToDelete(null);
+    };
+    
+
     return (
         <>
             <div className="flex items-center justify-between">
-            <Breadcrumb>
-                <BreadcrumbList>
-                    <BreadcrumbItem>
-                        <BreadcrumbLink href="/dashboard/home">Home</BreadcrumbLink>
-                    </BreadcrumbItem>
-                    <BreadcrumbSeparator />
-                    <BreadcrumbItem>
-                        <BreadcrumbLink href="/components">Books</BreadcrumbLink>
-                    </BreadcrumbItem>
-                </BreadcrumbList>
-            </Breadcrumb>
+                <Breadcrumb>
+                    <BreadcrumbList>
+                        <BreadcrumbItem>
+                            <BreadcrumbLink href="/dashboard/home">Home</BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                            <BreadcrumbLink href="/components">Books</BreadcrumbLink>
+                        </BreadcrumbItem>
+                    </BreadcrumbList>
+                </Breadcrumb>
                 <Link to={'/dashboard/books/create'}>
                     <Button>
                         <CirclePlus size={20} />
@@ -129,7 +164,7 @@ export default function BooksPage() {
                                                 <DropdownMenuContent align="end">
                                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                                     <DropdownMenuItem>Edit</DropdownMenuItem>
-                                                    <DropdownMenuItem>Delete</DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => handleDeleteClick(book)}>Delete</DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>
@@ -145,6 +180,23 @@ export default function BooksPage() {
                     </div>
                 </CardFooter>
             </Card>
+
+            {bookToDelete && (
+                <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                This action cannot be undone. This will permanently delete the book titled "{bookToDelete.title}" and remove its data from our servers.
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel onClick={handleCancelDelete}>Cancel</AlertDialogCancel>
+                            <AlertDialogAction onClick={handleConfirmDelete}>Continue</AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
+            )}
         </>
     );
 }

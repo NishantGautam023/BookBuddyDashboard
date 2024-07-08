@@ -5,7 +5,7 @@ import './index.css'
 import {router} from "../router.tsx";
 import {RouterProvider} from "react-router-dom";
 import {QueryClientProvider, QueryClient} from "@tanstack/react-query";
-
+import { Toaster } from "@/components/ui/toaster"
 
 const queryClient = new QueryClient();
 
@@ -18,6 +18,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 
       </RouterProvider>
 
-      </QueryClientProvider>
+    </QueryClientProvider>
+     <Toaster />
   </React.StrictMode>,
 )
