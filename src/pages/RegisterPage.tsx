@@ -12,25 +12,35 @@ import { Link, useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { register } from "@/http/api.ts";
-import { Loader } from "lucide-react";
+import { Loader, Eye, EyeOff } from "lucide-react";
 import useTokenStore from "@/store.ts";
 
 export default function RegisterPage() {
     const setToken = useTokenStore((state) => state.setToken);
     const navigate = useNavigate();
 
+    // Refs for input fields
     const nameRef = useRef<HTMLInputElement>(null);
     const emailRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
-    
-    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const confirmPasswordRef = useRef<HTMLInputElement>(null);
 
+    // State for managing error messages and password visibility
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+    const [eyeShowPassword, setEyeShowPassword] = useState(false);
+
+    // Toggle password visibility
+    const togglePasswordVisibility = () => {
+        setEyeShowPassword(!eyeShowPassword);
+    }
+
+    // Validate email format
     const isValidEmail = (email: string) => {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(email);
     }
 
-    // Mutations
+    // Mutation for registration
     const mutation = useMutation({
         mutationFn: register,
         onSuccess: (response) => {
@@ -39,7 +49,6 @@ export default function RegisterPage() {
         },
         onError: (error: any) => {
             let errorMessage = "An error occurred during registration. Please try again.";
-
             if (error.response) {
                 if (error.response.status === 400) {
                     errorMessage = "Invalid data provided. Please check your input.";
@@ -47,19 +56,22 @@ export default function RegisterPage() {
                     errorMessage = "Internal server error. Please try again later.";
                 }
             }
-
             setErrorMessage(errorMessage);
         }
-    })
+    });
 
+    // Handle form submission
     function onHandleRegisterClick(event: React.FormEvent) {
         event.preventDefault();
         setErrorMessage(null);  // Clear previous error message
+
         const name = nameRef.current?.value;
         const email = emailRef.current?.value;
         const password = passwordRef.current?.value;
+        const confirmPassword = confirmPasswordRef.current?.value;
 
-        if (!name || !email || !password) {
+        // Validate form inputs
+        if (!name || !email || !password || !confirmPassword) {
             return setErrorMessage("Please fill all the fields.");
         }
 
@@ -71,6 +83,16 @@ export default function RegisterPage() {
             return setErrorMessage("Password must be at least 6 characters long.");
         }
 
+        if (password !== confirmPassword) {
+            return setErrorMessage("Passwords do not match.");
+        }
+
+        // Temporarily hide password before submitting
+        if (eyeShowPassword) {
+            setEyeShowPassword(false);
+        }
+
+        // Submit the registration data
         mutation.mutate({ name, email, password });
     }
 
@@ -103,7 +125,36 @@ export default function RegisterPage() {
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="password">Password</Label>
-                                <Input id="password" type="password" ref={passwordRef} required autoComplete="password" />
+                                <div className="relative">
+                                    <Input
+                                        id="password"
+                                        className="pr-10"
+                                        type={eyeShowPassword ? "text" : "password"}
+                                        ref={passwordRef}
+                                        required
+                                        autoComplete="new-password"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={togglePasswordVisibility}
+                                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5"
+                                    >
+                                        {eyeShowPassword ? <EyeOff /> : <Eye />}
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="grid gap-2">
+                                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                                <div className="relative">
+                                    <Input
+                                        id="confirmPassword"
+                                        className="pr-10"
+                                        type={eyeShowPassword ? "text" : "password"}
+                                        ref={confirmPasswordRef}
+                                        required
+                                        autoComplete="new-password"
+                                    />
+                                </div>
                             </div>
                             {errorMessage && (
                                 <div className="text-red-500 text-sm">

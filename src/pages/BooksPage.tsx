@@ -45,6 +45,7 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
+      AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 export default function BooksPage() {
@@ -54,30 +55,29 @@ export default function BooksPage() {
         staleTime: 10000,
     });
 
-    const [deleteOpen, setDeleteOpen] = useState(false);
+     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [bookToDelete, setBookToDelete] = useState<Book | null>(null);
 
     const handleDeleteClick = (book: Book) => {
         setBookToDelete(book);
-        setDeleteOpen(true);
+        setIsDeleteDialogOpen(true);
     };
 
     const handleConfirmDelete = () => {
         if (bookToDelete) {
-            // Perform the delete operation here
             console.log("Deleting book:", bookToDelete);
-            // After deletion, close the dialog
-            setDeleteOpen(false);
+            setIsDeleteDialogOpen(false);
             setBookToDelete(null);
         }
     };
 
-        const handleCancelDelete = () => {
-        // Close the dialog and reset state
-        setDeleteOpen(false);
+    const handleCancelDelete = () => {
+        setIsDeleteDialogOpen(false);
         setBookToDelete(null);
     };
-    
+
+
+  
 
     return (
         <>
@@ -165,6 +165,7 @@ export default function BooksPage() {
                                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                                     <DropdownMenuItem>Edit</DropdownMenuItem>
                                                     <DropdownMenuItem onClick={() => handleDeleteClick(book)}>Delete</DropdownMenuItem>
+                                                
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>
@@ -181,22 +182,26 @@ export default function BooksPage() {
                 </CardFooter>
             </Card>
 
-            {bookToDelete && (
-                <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                This action cannot be undone. This will permanently delete the book titled "{bookToDelete.title}" and remove its data from our servers.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel onClick={handleCancelDelete}>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleConfirmDelete}>Continue</AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
-            )}
+    <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Are you sure you want to delete this book?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            This action cannot be undone. This will permanently delete the book
+                            "{bookToDelete?.title}" from our database.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel onClick={handleCancelDelete}>Cancel</AlertDialogCancel>
+                        <AlertDialogAction onClick={handleConfirmDelete}>Delete</AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            
+
+
+            
         </>
     );
 }
