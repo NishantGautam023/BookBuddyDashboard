@@ -1,5 +1,5 @@
-import { useQuery } from "@tanstack/react-query";
-import { getBooks } from "@/http/api.ts";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { getBooks, deleteBook } from "@/http/api.ts";
 import {
     Breadcrumb,
     BreadcrumbItem,
@@ -45,17 +45,53 @@ import {
     AlertDialogFooter,
     AlertDialogHeader,
     AlertDialogTitle,
-      AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { useToast } from "@/components/ui/use-toast";
+
 
 export default function BooksPage() {
+    const { toast } = useToast()
+    const queryClient = useQueryClient();
+
     const { data, isLoading, isError } = useQuery({
         queryKey: ["books"],
         queryFn: getBooks,
         staleTime: 10000,
     });
 
-     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+    const deleteMutation = useMutation({
+        mutationFn: deleteBook,
+        onSuccess: () => {
+            // Invalidate and refetch the books query
+            queryClient.invalidateQueries({ queryKey: ["books"] });
+            toast({
+                description: "Book deleted successfully!",
+                duration: 1500,
+                variant: "destructive"
+
+
+
+            })
+        },
+        onError: (error) => {
+            console.error("Failed to delete book:", error);
+
+            toast({
+                description: error.message,
+                duration: 1500,
+                variant: "destructive"
+
+
+
+            })
+        }
+    });
+
+
+
+
+    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [bookToDelete, setBookToDelete] = useState<Book | null>(null);
 
     const handleDeleteClick = (book: Book) => {
@@ -65,7 +101,7 @@ export default function BooksPage() {
 
     const handleConfirmDelete = () => {
         if (bookToDelete) {
-            console.log("Deleting book:", bookToDelete);
+            deleteMutation.mutate(bookToDelete._id);
             setIsDeleteDialogOpen(false);
             setBookToDelete(null);
         }
@@ -77,7 +113,7 @@ export default function BooksPage() {
     };
 
 
-  
+
 
     return (
         <>
@@ -165,7 +201,7 @@ export default function BooksPage() {
                                                     <DropdownMenuLabel>Actions</DropdownMenuLabel>
                                                     <DropdownMenuItem>Edit</DropdownMenuItem>
                                                     <DropdownMenuItem onClick={() => handleDeleteClick(book)}>Delete</DropdownMenuItem>
-                                                
+
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
                                         </TableCell>
@@ -182,7 +218,7 @@ export default function BooksPage() {
                 </CardFooter>
             </Card>
 
-    <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+            <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
                 <AlertDialogContent>
                     <AlertDialogHeader>
                         <AlertDialogTitle>Are you sure you want to delete this book?</AlertDialogTitle>
@@ -198,10 +234,10 @@ export default function BooksPage() {
                 </AlertDialogContent>
             </AlertDialog>
 
-            
 
 
-            
+
+
         </>
     );
 }
