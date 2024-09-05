@@ -3,7 +3,7 @@ import useTokenStore from "@/store.ts";
 
 const api = axios.create({
 
-    baseURL: import.meta.env.VITE_API_LIVEHOST_URL,
+    baseURL: import.meta.env.VITE_API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
     },
