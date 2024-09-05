@@ -14,6 +14,7 @@ import { useMutation } from "@tanstack/react-query";
 import { register } from "@/http/api.ts";
 import { Loader, Eye, EyeOff } from "lucide-react";
 import useTokenStore from "@/store.ts";
+import {posthog} from "posthog-js"
 
 export default function RegisterPage() {
     const setToken = useTokenStore((state) => state.setToken);
@@ -45,6 +46,20 @@ export default function RegisterPage() {
         mutationFn: register,
         onSuccess: (response) => {
             setToken(response.data.accessToken);
+
+
+            // Identify user in PostHog
+            posthog.identify(response.data.user._id, {
+                email: response.data.user.email,
+                name: response.data.user.name
+            });
+
+            // Capture signup event
+            posthog.capture('user_signed_up', {
+                login_type: 'email',
+                is_free_trial: true
+            });
+
             navigate('/dashboard/home');
         },
         onError: (error: any) => {

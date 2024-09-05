@@ -14,7 +14,7 @@ import {Bell, CircleUser, Home, LineChart, Menu, Package, Package2, Search, Shop
 import {Input} from "@/components/ui/input.tsx";
 import useTokenStore from "@/store.ts";
 import { useToast } from "@/components/ui/use-toast"
-
+import {posthog} from "posthog-js";
 
 export default function DashboardLayout() {
 
@@ -22,7 +22,7 @@ export default function DashboardLayout() {
 
     const {token,setToken} = useTokenStore(state => state)
      const { toast } = useToast()
-    
+
 
     if(token === "") {
         return <Navigate to={'/auth/login'} replace/>
@@ -30,9 +30,16 @@ export default function DashboardLayout() {
 
     function handleLogoutButton() {
 
+        // Capture logout event
+        posthog.capture('user_logged_out');
+
+        // Reset PostHog user identification
+        posthog.reset();
+
+
         setToken("")
         toast({
-          
+
             title: `Logged out Successful at ${new Date().toDateString()}`,
             variant: "destructive",
             duration: 1000
@@ -198,7 +205,7 @@ export default function DashboardLayout() {
                     </main>
                 </div>
             </div>
-             
+
         </>
     )
 }

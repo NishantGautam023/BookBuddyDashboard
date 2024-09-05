@@ -17,7 +17,7 @@ import { Loader, Eye, EyeOff } from "lucide-react";
 import useTokenStore from "@/store.ts";
 import { useToast } from "@/components/ui/use-toast";
 
-
+import { posthog } from "posthog-js";
 
 
 
@@ -52,6 +52,18 @@ export default function LoginPage() {
 
             console.log("Login successful", response)
             setToken(response.data.accessToken);
+
+            // Identify user in PostHog
+            posthog.identify(response.data.user._id, {
+                email: response.data.user.email,
+                name: response.data.user.name
+            });
+
+            // Capture login event
+            posthog.capture('user_logged_in', {
+                login_type: 'email'
+            });
+
             toast({
                 description: "Login Successful!",
                 duration: 1500,
@@ -92,6 +104,8 @@ export default function LoginPage() {
 
 
     })
+
+
 
     function onHandleSubmitClick(event: React.FormEvent) {
         event.preventDefault()
